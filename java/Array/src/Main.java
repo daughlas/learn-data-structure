@@ -2,7 +2,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Array arr = new Array(20);
+        Array<Integer> arr = new Array<>(20);
         for(int i = 0 ; i < 10 ; i ++)
             arr.addLast(i);
         System.out.println(arr);
@@ -22,5 +22,12 @@ public class Main {
 
         arr.removeFirst();
         System.out.println(arr);
+
+        Array<Student> students = new Array<>();
+        students.addLast(new Student("a", 10));
+        students.addLast(new Student("b", 20));
+        students.addLast(new Student("c", 30));
+
+        System.out.println(students);
     }
 }
