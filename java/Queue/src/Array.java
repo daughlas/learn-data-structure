@@ -6,7 +6,6 @@ public class Array<E> {
 
     // 构造函数，传入数组的容量capacity构造Array
     public Array(int capacity){
-        // java 不支持 new E[capacity] 这样的语法，所以绕个弯路
         data = (E[])new Object[capacity];
         size = 0;
     }
@@ -31,6 +30,23 @@ public class Array<E> {
         return size == 0;
     }
 
+    // 在index索引的位置插入一个新元素e
+    public void add(int index, E e){
+
+        if(index < 0 || index > size)
+            throw new IllegalArgumentException("Add failed. Require index >= 0 and index <= size.");
+
+        if(size == data.length)
+            resize(2 * data.length);
+
+        for(int i = size - 1; i >= index ; i --)
+            data[i + 1] = data[i];
+
+        data[index] = e;
+
+        size ++;
+    }
+
     // 向所有元素后添加一个新元素
     public void addLast(E e){
         add(size, e);
@@ -41,36 +57,19 @@ public class Array<E> {
         add(0, e);
     }
 
-    // 在index索引的位置插入一个新元素e
-    public void add(int index, E e){
-
-        if(index < 0 || index > size)
-            throw new IllegalArgumentException("Add failed. Require index >= 0 and index <= size.");
-
-        if(size == data.length)
-            resize(2 * size);
-
-        for(int i = size - 1; i >= index ; i --)
-            data[i + 1] = data[i];
-
-        data[index] = e;
-
-        size ++;
-    }
-
-    private void resize(int newCapacity) {
-        E[] newData = (E[])new Object[newCapacity];
-        for (int i = 0; i < size; i++) {
-            newData[i] = data[i];
-        }
-        data = newData;
-    }
-
     // 获取index索引位置的元素
     public E get(int index){
         if(index < 0 || index >= size)
             throw new IllegalArgumentException("Get failed. Index is illegal.");
         return data[index];
+    }
+
+    public E getLast(){
+        return get(size - 1);
+    }
+
+    public E getFirst(){
+        return get(0);
     }
 
     // 修改index索引位置的元素为e
@@ -83,7 +82,6 @@ public class Array<E> {
     // 查找数组中是否有元素e
     public boolean contains(E e){
         for(int i = 0 ; i < size ; i ++){
-            // equals 值比较，== 引用比较
             if(data[i].equals(e))
                 return true;
         }
@@ -101,18 +99,17 @@ public class Array<E> {
 
     // 从数组中删除index位置的元素, 返回删除的元素
     public E remove(int index){
-        if(index < 0 || index >= size) {
+        if(index < 0 || index >= size)
             throw new IllegalArgumentException("Remove failed. Index is illegal.");
-        }
+
         E ret = data[index];
         for(int i = index + 1 ; i < size ; i ++)
             data[i - 1] = data[i];
         size --;
-        data[size] = null;
+        data[size] = null; // loitering objects != memory leak
 
-        if (size == data.length / 4 && data.length / 2 != 0) {
+        if(size == data.length / 4 && data.length / 2 != 0)
             resize(data.length / 2);
-        }
         return ret;
     }
 
@@ -146,5 +143,14 @@ public class Array<E> {
         }
         res.append(']');
         return res.toString();
+    }
+
+    // 将数组空间的容量变成newCapacity大小
+    private void resize(int newCapacity){
+
+        E[] newData = (E[])new Object[newCapacity];
+        for(int i = 0 ; i < size ; i ++)
+            newData[i] = data[i];
+        data = newData;
     }
 }
